@@ -17,7 +17,7 @@ import Testing
 ])
 func grf(path: String) async throws {
     let resourceURL = Bundle.module.resourceURL!
-    let grfURL = resourceURL.appending(path: path)
+    let grfURL = resourceURL.appendingPathComponent(path)
     let grf = try GRF(url: grfURL)
 
     #expect(grf.table.entries.count == 9)
@@ -31,16 +31,17 @@ func grf(path: String) async throws {
     #expect(grf.table.entries[7].path.string == "data\\resnametable.txt")
     #expect(grf.table.entries[8].path.string == "data\\t2_¹è°æ1-1.bmp")
 
+    let dataURL = resourceURL.appendingPathComponent("data")
     let files = [
-        resourceURL.appending(path: "data/0_Tex1.bmp"),
-        resourceURL.appending(path: "data/11001.txt"),
-        resourceURL.appending(path: "data/balls.wav"),
-        resourceURL.appending(path: "data/idnum2itemdesctable.txt"),
-        resourceURL.appending(path: "data/idnum2itemdisplaynametable.txt"),
-        resourceURL.appending(path: "data/loading00.jpg"),
-        resourceURL.appending(path: "data/monstertalktable.xml"),
-        resourceURL.appending(path: "data/resnametable.txt"),
-        resourceURL.appending(path: "data/t2_¹è°æ1-1.bmp"),
+        dataURL.appendingPathComponent("0_Tex1.bmp"),
+        dataURL.appendingPathComponent("11001.txt"),
+        dataURL.appendingPathComponent("balls.wav"),
+        dataURL.appendingPathComponent("idnum2itemdesctable.txt"),
+        dataURL.appendingPathComponent("idnum2itemdisplaynametable.txt"),
+        dataURL.appendingPathComponent("loading00.jpg"),
+        dataURL.appendingPathComponent("monstertalktable.xml"),
+        dataURL.appendingPathComponent("resnametable.txt"),
+        dataURL.appendingPathComponent("t2_¹è°æ1-1.bmp"),
     ]
 
     let stream = GRFStream(forReadingFrom: grfURL)!
