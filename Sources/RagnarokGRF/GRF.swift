@@ -85,13 +85,16 @@ extension GRF {
         var tableSizeCompressed: UInt32
         var tableSize: UInt32
 
-        var entries: [GRF.Entry] = []
+        var entries: [GRF.Entry]
 
         init(from stream: GRFStream, header: GRF.Header) throws {
             switch header.version {
             case 0x102, 0x103:
                 tableSizeCompressed = 0
                 tableSize = 0
+
+                entries = []
+                entries.reserveCapacity(Int(header.fileCount))
 
                 let data = try stream.read(count: stream.bytesRemaining)
                 let des = DES()
@@ -159,6 +162,9 @@ extension GRF {
             case 0x200, 0x300:
                 tableSizeCompressed = try stream.read(UInt32.self)
                 tableSize = try stream.read(UInt32.self)
+
+                entries = []
+                entries.reserveCapacity(Int(header.fileCount))
 
                 let compressedData = try stream.read(count: Int(tableSizeCompressed))
                 if compressedData.first == 0 {
