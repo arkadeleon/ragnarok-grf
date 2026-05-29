@@ -55,10 +55,10 @@ final class GRFStream {
     }
 
     func read<T>(_ type: T.Type) throws -> T where T: FixedWidthInteger {
-        let bytes = try read(count: MemoryLayout<T>.size)
-        let value = bytes.withUnsafeBytes {
-            $0.loadUnaligned(as: T.self)
+        var value = T.zero
+        _ = withUnsafeMutableBytes(of: &value) {
+            fread($0.baseAddress, 1, MemoryLayout<T>.size, file)
         }
-        return T(littleEndian: value)
+        return value
     }
 }
