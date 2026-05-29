@@ -14,6 +14,7 @@ import Testing
     "test102.grf",
     "test103.grf",
     "test200.grf",
+    "test300.grf",
 ])
 func grf(path: String) async throws {
     let resourceURL = Bundle.module.resourceURL!

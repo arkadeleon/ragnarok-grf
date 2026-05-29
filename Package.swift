@@ -33,6 +33,7 @@ let package = Package(
                 .copy("Resources/test102.grf"),
                 .copy("Resources/test103.grf"),
                 .copy("Resources/test200.grf"),
+                .copy("Resources/test300.grf"),
             ]
         ),
     ]
