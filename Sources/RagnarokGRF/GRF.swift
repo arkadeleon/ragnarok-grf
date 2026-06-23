@@ -51,25 +51,24 @@ extension GRF {
 
         init(from stream: GRFStream) throws {
             let masterOfMagic = Array("Master of Magic\0".utf8)
-            let eventHorizon = Array("Event Horizon\0RL".utf8)
+            let eventHorizon = Array("Event Horizon\0".utf8)
 
             magic = try stream.read(count: 16)
             key = try stream.read(count: 14)
 
-            switch magic {
-            case masterOfMagic:
+            if magic == masterOfMagic {
                 let fileTableOffset = try stream.read(UInt32.self)
                 self.fileTableOffset = UInt64(fileTableOffset)
 
                 let seed = try stream.read(UInt32.self)
                 let fileCount = try stream.read(UInt32.self)
                 self.fileCount = fileCount - seed - 7
-            case eventHorizon:
+            } else if magic.dropLast(2) == eventHorizon {
                 let fileTableOffset = try stream.read(UInt64.self)
                 self.fileTableOffset = fileTableOffset + 4
 
                 fileCount = try stream.read(UInt32.self)
-            default:
+            } else {
                 throw GRFError.invalidHeader(magic)
             }
 
