@@ -11,17 +11,7 @@ public actor GRFArchive {
     nonisolated public let url: URL
 
     private lazy var grf: GRF? = {
-        #if !os(Linux)
-        let beginTime = CFAbsoluteTimeGetCurrent()
-        #endif
-
         let grf = try? GRF(url: url)
-
-        #if !os(Linux)
-        let endTime = CFAbsoluteTimeGetCurrent()
-        logger.info("GRF: Load (\(endTime - beginTime)s)")
-        #endif
-
         return grf
     }()
 
@@ -30,19 +20,10 @@ public actor GRFArchive {
             return [:]
         }
 
-        #if !os(Linux)
-        let beginTime = CFAbsoluteTimeGetCurrent()
-        #endif
-
         let entries = Dictionary(
             grf.table.entries.map({ ($0.path.string.uppercased(), $0) }),
             uniquingKeysWith: { (first, _) in first }
         )
-
-        #if !os(Linux)
-        let endTime = CFAbsoluteTimeGetCurrent()
-        logger.info("GRF: Load entries (\(endTime - beginTime)s)")
-        #endif
 
         return entries
     }()
@@ -52,10 +33,6 @@ public actor GRFArchive {
             return []
         }
 
-        #if !os(Linux)
-        let beginTime = CFAbsoluteTimeGetCurrent()
-        #endif
-
         var directories = Set(grf.table.entries.map({ $0.path.parent }))
         for directory in directories {
             var parent = directory
@@ -64,11 +41,6 @@ public actor GRFArchive {
                 directories.insert(parent)
             } while !parent.string.isEmpty
         }
-
-        #if !os(Linux)
-        let endTime = CFAbsoluteTimeGetCurrent()
-        logger.info("GRF: Load directories (\(endTime - beginTime)s)")
-        #endif
 
         return directories
     }()
@@ -94,20 +66,11 @@ public actor GRFArchive {
 
         let path = GRFPathReference(path: path)
 
-        #if !os(Linux)
-        let beginTime = CFAbsoluteTimeGetCurrent()
-        #endif
-
         let subdirectoryNodeCount = directories
             .count(where: { $0.parent == path })
 
         let entryNodeCount = grf.table.entries
             .count(where: { $0.path.parent == path })
-
-        #if !os(Linux)
-        let endTime = CFAbsoluteTimeGetCurrent()
-        logger.info("GRF: Load child count of directory node at \(path.string) (\(endTime - beginTime)s)")
-        #endif
 
         return subdirectoryNodeCount + entryNodeCount
     }
@@ -119,10 +82,6 @@ public actor GRFArchive {
 
         let path = GRFPathReference(path: path)
 
-        #if !os(Linux)
-        let beginTime = CFAbsoluteTimeGetCurrent()
-        #endif
-
         let subdirectoryNodes = directories
             .filter({ $0.parent == path })
             .map({ GRFNode(path: $0, isDirectory: true) })
@@ -132,11 +91,6 @@ public actor GRFArchive {
             .filter({ $0.path.parent == path })
             .map({ GRFNode(path: $0.path, isDirectory: false) })
             .sorted(using: KeyPathComparator(\.path.string))
-
-        #if !os(Linux)
-        let endTime = CFAbsoluteTimeGetCurrent()
-        logger.info("GRF: Load children of directory node at \(path.string) (\(endTime - beginTime)s)")
-        #endif
 
         return subdirectoryNodes + entryNodes
     }
